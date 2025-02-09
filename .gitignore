@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# JetBrains IDE settings (if using WebStorm)
+.idea/      
+
+# VS Code workspace settings (optional)
+.vscode/       
+
+# Vim swap files
+*.swp      
+
+# General log files
+*.log                

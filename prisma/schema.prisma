@@ -1,0 +1,93 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id               String   @id @default(uuid())
+  name             String?
+  email            String?  @unique
+  emailVerified    DateTime?
+  password         String?
+  image            String?
+  role             Role     @default(USER)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  accounts         Account[]
+  sessions         Session[]
+  phone            String?  @unique
+  twoFactorEnabled Boolean  @default(false)
+  Projects         Project[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String
+  type              String 
+  providerAccountId String
+  access_token      String?
+  refresh_token     String?
+  scope             String
+  token_type        String
+  id_token          String?
+  expires_at        Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id                String  @id @default(uuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionToken      String  @unique
+  expires           DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+
+model Project {
+  id                String  @id @default(uuid())
+  name              String
+  description       String?
+  ownerId           String
+  owner             User    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  sharedData        sharedData[]
+}
+model sharedData{
+  id                String  @id @default(uuid())
+  data              Json
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  ApisEndpoint      ApisEndpoint[]
+  projectId         String
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ApisEndpoint {
+  api_id              String @id @default(uuid())
+  name                String
+  description         String
+  endpoint            String
+  method              String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  sharedDataId        String?
+  sharedData          sharedData? @relation(fields: [sharedDataId], references: [id])
+}
+
