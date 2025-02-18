@@ -7,6 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import ConfirmationModal from "../components/modal/ConfirmationModal";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type ProjectType = {
   id: string;
@@ -16,6 +17,8 @@ type ProjectType = {
 
 export default function Project() {
   const { data: session } = useSession();
+  const router = useRouter();
+
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectType | null>(null);
@@ -42,11 +45,15 @@ export default function Project() {
     }
   };
 
+  const viewProject = async (project : ProjectType)=>{
+    router.push(`/project/${project.id}`)
+    console.log(project)
+    
+  }
+
   const handleSaveProject = async (data: { id?: string; name: string; description?: string }) => {
     try {
       if (editingProject) {
-        console.log(data)
-        // Update project
         const res = await fetch(`/api/projects/${editingProject.id}`, {
           method: "PUT",
           headers: {
@@ -59,9 +66,8 @@ export default function Project() {
         setProjects((prev) =>
           prev.map((proj) => (proj.id === response.updatedProject.id ? response.updatedProject : proj))
         );
-        console.log(projects)
       } else {
-        // Add new project
+        
         const res = await fetch("/api/projects", {
           method: "POST",
           headers: {
@@ -84,7 +90,7 @@ export default function Project() {
     try {
       await axios.delete(`/api/projects/${deleteProjectId}`);
       setProjects((prev) =>
-        prev.filter((proj) => proj.id !== deleteProjectId) // Corrected filter logic
+        prev.filter((proj) => proj.id !== deleteProjectId) 
       );
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -104,7 +110,6 @@ export default function Project() {
     setIsDeleteModalOpen(true)
     setDeleteProjectId(project.id)
     
-    console.log(project)
   }
 
   return (
@@ -124,15 +129,16 @@ export default function Project() {
                   projects.map((project) => (
                     <div
                       key={project.id}
-                      className="flex justify-between items-center p-4 my-4 bg-white text-black font-bold text-xl tracking-wider rounded-md"
+                      className="flex justify-between items-center my-4 bg-white text-black font-bold text-xl tracking-wider rounded-md hover:bg-sky-700"
                     >
-                      <span>{project.name}</span>
-                      <div>
+                      <div className="w-[80%] hover:text-[#ff8433] cursor-pointer p-4" onClick={()=> viewProject(project)} ><span>{project.name}</span></div>
+                      
+                      <div className="p-4">
                         <button className="mr-6" onClick={() => handleEditModal(project)}>
-                          <Edit />
+                          <Edit className="hover:text-[#ff8433] transition duration-200" />
                         </button>
                         <button onClick={() => deleteModal(project)}>
-                          <DeleteIcon />
+                          <DeleteIcon className="hover:text-[#ff8433] transition duration-200" />
                         </button>
                       </div>
                     </div>

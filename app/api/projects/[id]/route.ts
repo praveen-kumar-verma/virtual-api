@@ -2,19 +2,21 @@ import { getSessionOrRedirect } from "@/app/lib/auth";
 import { prismaClient } from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-// export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-//   try {
-//     const project = await prisma.project.findUnique({
-//       where: { id: params.id },
-//     });
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const {id } = await params
 
-//     if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    const project = await prismaClient.project.findUnique({
+      where: { id: id },
+    });
 
-//     return NextResponse.json(project, { status: 200 });
-//   } catch (error) {
-//     return NextResponse.json({ error: "Failed to fetch project" }, { status: 500 });
-//   }
-// }
+    if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
+
+    return NextResponse.json({detail : project, message: "Project Detail receive successfully"}, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: error }, { status: 500 });
+  }
+}
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -31,7 +33,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     return NextResponse.json({message: "Project updated successfully", updatedProject}, { status: 200 });
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }
