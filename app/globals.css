@@ -9,3 +9,18 @@ body {
   /* background-color: #48A6A7; */
   background-color: #1D1616;  
 }
+
+.MuiSlider-root {
+  color: #20b2aa;
+}
+
+.MuiSlider-root:hover {
+  color: #2e8b57;
+}
+.MuiStepLabel-labelContainer, .MuiStepLabel-label.Mui-completed{
+  color: white !important;
+}
+
+.MuiStepLabel-label.Mui-active{
+  color: orange !important;
+}

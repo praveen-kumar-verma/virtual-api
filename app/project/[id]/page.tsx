@@ -1,5 +1,7 @@
 "use client";
-import NewResourceModal from "@/app/components/modal/NewResourceModal";
+import AddResource from "@/app/components/addResource/AddResource";
+import PreviewResource from "@/app/components/previewResource/PreviewResource";
+import CustomStepper from "@/app/components/stepper/CustomStepper";
 // import Button from "../../components/button/Button";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -14,6 +16,8 @@ interface ProjectDetail {
   updatedAt?: string;
   [key: string]: string | number | boolean | object | undefined;
 }
+const steps = ['Generate Schema', 'Preview Data', 'API Methods', 'REST API URLs and Logs'];
+
 
 export default function ViewSpecificProject() {
   const { data: session } = useSession();
@@ -53,6 +57,8 @@ export default function ViewSpecificProject() {
     return <p>No project details found.</p>;
   }
 
+
+
   // const openResource = () => {
   //   console.log("hhaha")
   //   setIsResourceModalOpen(true);
@@ -64,7 +70,7 @@ export default function ViewSpecificProject() {
 
   return (
     <div>
-      <h1 className="text-white">Project Details</h1>
+      {/* <h1 className="text-white">Project Details</h1>
       <ul className="text-white">
         {Object.entries(projectDetail).map(([key, value]) => (
           <li key={key}>
@@ -74,15 +80,26 @@ export default function ViewSpecificProject() {
               : String(value)}
           </li>
         ))}
-      </ul>
+      </ul> */}
+
+
+
+      <CustomStepper steps={steps}>
+      {[ <AddResource key="0" />, 
+      <PreviewResource key="1" />,
+       <div key="2">Content for API Methods</div>, <div key="3">Content for REST API URLs and Logs</div>]}
+      </CustomStepper>
+
+
+
+
+
+
 {/* 
       <Button onClick={() => openResource()} className="text-xl">
         New Resource
       </Button> */}
 
-      <NewResourceModal
-
-      />
     </div>
   );
 }
