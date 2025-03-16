@@ -16,6 +16,12 @@ interface ProjectDetail {
   updatedAt?: string;
   [key: string]: string | number | boolean | object | undefined;
 }
+interface Field {
+  property: string;
+  fakerMethod: string;
+  isObject: boolean;
+  subFields?: Field[];
+}
 const steps = ['Generate Schema', 'Preview Data', 'API Methods', 'REST API URLs and Logs'];
 
 
@@ -27,6 +33,9 @@ export default function ViewSpecificProject() {
     null
   );
   const [loading, setLoading] = useState<boolean>(true);
+  const [fields, setFields] = useState<Field[]>([
+    { property: "name", fakerMethod: "name.fullName", isObject: false },
+]);
   // const [isResourceModalOpen, setIsResourceModalOpen] =
   //   useState<boolean>(false);
 
@@ -84,11 +93,14 @@ export default function ViewSpecificProject() {
 
 
 
-      <CustomStepper steps={steps}>
-      {[ <AddResource key="0" />, 
-      <PreviewResource key="1" />,
-       <div key="2">Content for API Methods</div>, <div key="3">Content for REST API URLs and Logs</div>]}
-      </CustomStepper>
+<CustomStepper steps={steps}>
+      {[
+        <AddResource key="0" fields={fields} setFields={setFields} />,
+        <PreviewResource key="1" fields={fields} />,
+        <div key="2">Content for API Methods</div>,
+        <div key="3">Content for REST API URLs and Logs</div>,
+      ]}
+    </CustomStepper>
 
 
 

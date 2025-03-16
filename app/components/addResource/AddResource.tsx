@@ -35,16 +35,13 @@ interface Field {
     subFields?: Field[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function AddResource() {
-    // const [resourceData, setResourceData] = React.useState('');
-    const [numRecords, setNumRecords] = useState(1);
-    const [fields, setFields] = useState<Field[]>([
-        { property: "name", fakerMethod: "name.fullName", isObject: false },
-    ]);
-    const [generatedJson, setGeneratedJson] = useState<string>("");
-    const [previewData, setPreviewData] = useState<string>("");
+interface AddResourceProps {
+  fields: Field[];
+  setFields: React.Dispatch<React.SetStateAction<Field[]>>;
+}
 
+export default function AddResource({ fields, setFields }: AddResourceProps) {
+    const [previewData, setPreviewData] = useState<string>("");
 
     // Add a new row
     const addRow = (parentIndex: number | null = null) => {
@@ -94,31 +91,6 @@ export default function AddResource() {
         setFields(updatedFields);
     };
 
-    // Recursive JSON generation
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const generateJsonData = (fields: Field[]): Record<string, any> => {
-        return fields.reduce((acc, field) => {
-            if (field.isObject) {
-                acc[field.property] = field.subFields ? generateJsonData(field.subFields) : {};
-            } else {
-                const [category, method] = field.fakerMethod.split(".");
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const categoryMethods = faker[category as keyof typeof faker] as Record<string, any>;
-
-                if (categoryMethods && typeof categoryMethods[method] === "function") {
-                    acc[field.property] = categoryMethods[method]();
-                }
-            }
-            return acc;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        }, {} as Record<string, any>);
-    };
-
-    // Generate JSON
-    const generateJson = () => {
-        const generatedData = Array.from({ length: numRecords }, () => generateJsonData(fields));
-        setGeneratedJson(JSON.stringify(generatedData, null, 2));
-    };
     const generatePreview = (fields: Field[]) => {
         const buildPreview = (fieldsArray: Field[]) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -141,21 +113,12 @@ export default function AddResource() {
     };
 
     return (
-        <div className="min-h-screen">
+        <div className="">
             <h1 className="text-3xl font-bold mb-4 text-center">Schema Generator</h1>
 
             <div className="flex" >
                 <div className="flex flex-col flex-1 flex-grow items-center">
-                    <div className="mb-4">
-                        <label className="font-medium mr-2 ">Number of Records:</label>
-                        <input
-                            type="number"
-                            value={numRecords}
-                            onChange={(e) => setNumRecords(Number(e.target.value))}
-                            className="border p-2 rounded w-20 bg-[#1D1616]"
-                            min={1}
-                        />
-                    </div>
+
 
                     {/* Dynamic Fields Section */}
                     <div className="w-full max-w-2xl bg-[#1D1616] p-4 shadow-md rounded-md">
@@ -241,10 +204,6 @@ export default function AddResource() {
                         </button>
                     </div>
 
-                    {/* Generate JSON Button */}
-                    <button onClick={generateJson} className="mt-4 bg-green-500 text-white py-2 px-6 rounded-md">
-                        Generate JSON
-                    </button>
                     <button onClick={generatePreviewData} className="mt-4 bg-green-500 text-white py-2 px-6 rounded-md">
                         Preview Schema
                     </button>
@@ -260,18 +219,9 @@ export default function AddResource() {
                         </div>
                     )}
 
-                    {generatedJson && (
-                        <div className="mt-6 w-full max-w-2xl p-4 shadow-md rounded-md">
-                            <h2 className="text-lg font-semibold mb-2">Generated JSON:</h2>
-                            <pre className="p-3 rounded text-sm overflow-auto">{generatedJson}</pre>
-                        </div>
-                    )}
 
                 </div>
             </div>
-
-
-
 
         </div>
     );
